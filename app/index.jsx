@@ -22,7 +22,9 @@ export default function index() {
   }
 
   return (
-    <View style={{ ...container.container, ...styles.wrapper }}>
+    <View
+      style={{ ...container.container, ...{ backgroundColor: colors.Grey } }}
+    >
       <Logo />
       <Link href={"/login/Login"} asChild>
         <Pressable style={styles.buttonLog}>
@@ -50,9 +52,6 @@ export default function index() {
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    backgroundColor: colors.Grey,
-  },
   buttonLog: {
     alignItems: "center",
     justifyContent: "center",
