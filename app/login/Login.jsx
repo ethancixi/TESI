@@ -48,7 +48,7 @@ export default function Login() {
 
   onAuthStateChanged(auth, (user) => {
     if (user && isLoggedIn) {
-      router.replace("/main/Home");
+      router.replace("/main/views/Map");
     }
   });
 
@@ -121,6 +121,7 @@ export default function Login() {
           </Pressable>
         </Link>
       </View>
+      <StatusBar style={styles.statusBar} />
     </SafeAreaProvider>
   );
 }
@@ -156,5 +157,9 @@ const styles = StyleSheet.create({
   textAbsolute: {
     position: "absolute",
     bottom: 32,
+  },
+  statusBar: {
+    flex: 1,
+    backgroundColor: colors.Grey,
   },
 });

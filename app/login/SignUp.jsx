@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   Pressable,
@@ -8,7 +8,6 @@ import {
   View,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Keyboard,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -63,9 +62,16 @@ export default function Login() {
     }
   };
 
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user && isLoggedIn) {
+  //       router.replace("/main/Home");
+  //     }
+  //   });
+  // }, []);
   onAuthStateChanged(auth, (user) => {
     if (user && isLoggedIn) {
-      router.replace("/main/Home");
+      router.replace("/main/views/Map");
     }
   });
 
@@ -161,6 +167,7 @@ export default function Login() {
           </Pressable>
         </Link>
       </View>
+      <StatusBar style={styles.statusBar} />
     </SafeAreaProvider>
   );
 }
@@ -196,5 +203,9 @@ const styles = StyleSheet.create({
   textAbsolute: {
     position: "absolute",
     bottom: 32,
+  },
+  statusBar: {
+    flex: 1,
+    backgroundColor: colors.Grey,
   },
 });

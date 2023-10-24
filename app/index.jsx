@@ -10,6 +10,7 @@ import colors from "../constants/colors";
 import TextRoboto from "../components/Text/textRoboto";
 import fontsize from "../constants/fontsize";
 import Logo from "../components/Logo";
+import { StatusBar } from "expo-status-bar";
 
 export default function index() {
   let [fontsLoaded, fontError] = useFonts({
@@ -47,6 +48,7 @@ export default function index() {
         </Pressable>
       </Link>
       <Image style={styles.theatre} source={require("../assets/teatro.png")} />
+      <StatusBar style={styles.statusBar} />
     </View>
   );
 }
@@ -88,5 +90,9 @@ const styles = StyleSheet.create({
     height: "70%",
     width: "100%",
     zIndex: -10,
+  },
+  statusBar: {
+    flex: 1,
+    backgroundColor: colors.Grey,
   },
 });

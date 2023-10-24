@@ -22,7 +22,7 @@ export default function () {
 const styles = StyleSheet.create({
   containerVertical: {
     alignItems: "center",
-    position: "relative",
+    position: "absolute",
     top: 16,
   },
   pin: { marginVertical: -12 },

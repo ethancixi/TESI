@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { useFonts, Coiny_400Regular } from "@expo-google-fonts/coiny";
 
-export default function TextRoboto({ text, size, color }) {
+export default function TextCoiny({ text, size, color }) {
   let [fontsLoaded, fontError] = useFonts({
     Coiny_400Regular,
   });
