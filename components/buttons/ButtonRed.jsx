@@ -13,9 +13,10 @@ export default function ButtonRed({ text, func }) {
 
 const styles = StyleSheet.create({
   button: {
+    padding: 4,
     alignItems: "center",
     justifyContent: "center",
-    width: 108,
+    maxWidth: "50%",
     height: 32,
     backgroundColor: colors.Amaranth,
     borderRadius: 8,

@@ -14,8 +14,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import colors from "../../constants/colors";
 
-import TextCoiny from "../../components/Text/TextCoiny";
-import TextRoboto from "../../components/Text/textRoboto";
+import TextRoboto from "../../components/Text/TextRoboto";
 import container from "../../styles/container";
 import Logo from "../../components/Logo";
 import ButtonRed from "../../components/buttons/ButtonRed";
@@ -59,16 +58,18 @@ export default function Login() {
       alert("registration failed: " + error.message);
     } finally {
       setLoading(false);
+      updateProfile(auth.currentUser, {
+        displayName: username,
+      })
+        .then(() => {
+          console.log("all good");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   };
 
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user && isLoggedIn) {
-  //       router.replace("/main/Home");
-  //     }
-  //   });
-  // }, []);
   onAuthStateChanged(auth, (user) => {
     if (user && isLoggedIn) {
       router.replace("/main/views/Map");
@@ -192,7 +193,6 @@ const styles = StyleSheet.create({
     width: "70%",
     color: colors.White,
     backgroundColor: colors.LightGreyOpacity02,
-    opacity: 0.2,
     padding: 6,
     borderRadius: 8,
   },

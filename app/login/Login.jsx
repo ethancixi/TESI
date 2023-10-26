@@ -14,8 +14,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import colors from "../../constants/colors";
 
-import TextCoiny from "../../components/Text/TextCoiny";
-import TextRoboto from "../../components/Text/textRoboto";
+import TextRoboto from "../../components/Text/TextRoboto";
 import container from "../../styles/container";
 import Logo from "../../components/Logo";
 import ButtonRed from "../../components/buttons/ButtonRed";
@@ -68,7 +67,7 @@ export default function Login() {
           <View style={styles.loginForm}>
             <TextInput
               placeholder="Email"
-              placeholderTextColor={colors.White}
+              placeholderTextColor={colors.LightGrey}
               onChangeText={(newEmail) => setEmail(newEmail)}
               defaultValue={email}
               style={styles.inputBox}
@@ -77,7 +76,7 @@ export default function Login() {
             />
             <TextInput
               placeholder="Password"
-              placeholderTextColor={colors.White}
+              placeholderTextColor={colors.LightGrey}
               onChangeText={(newPassword) => setPassword(newPassword)}
               defaultValue={password}
               style={styles.inputBox}
@@ -146,7 +145,6 @@ const styles = StyleSheet.create({
     width: "70%",
     color: colors.White,
     backgroundColor: colors.LightGreyOpacity02,
-    opacity: 0.2,
     padding: 6,
     borderRadius: 8,
   },

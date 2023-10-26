@@ -13,8 +13,9 @@ export default function Layout() {
     <Tabs
       initialRouteName="Map"
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
           position: "absolute",
           bottom: 48,
@@ -60,6 +61,12 @@ export default function Layout() {
               <Image source={require("../../../assets/icons/user.png")} />
             </View>
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="AddEvent"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

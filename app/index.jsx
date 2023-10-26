@@ -7,7 +7,7 @@ import { useFonts, Coiny_400Regular } from "@expo-google-fonts/coiny";
 import { Roboto_400Regular } from "@expo-google-fonts/roboto";
 import container from "../styles/container";
 import colors from "../constants/colors";
-import TextRoboto from "../components/Text/textRoboto";
+import TextRoboto from "../components/Text/TextRoboto";
 import fontsize from "../constants/fontsize";
 import Logo from "../components/Logo";
 import { StatusBar } from "expo-status-bar";
