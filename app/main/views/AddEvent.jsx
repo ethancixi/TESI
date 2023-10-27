@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   Image,
+  Pressable,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
@@ -19,6 +20,9 @@ import ButtonRed from "../../../components/buttons/ButtonRed";
 
 import colors from "../../../constants/colors";
 import { categories } from "../../../constants/categories";
+import { collection, addDoc } from "firebase/firestore";
+import FIREBASE_FIRESTORE from "../../../firebaseConfig";
+import Checkbox from "expo-checkbox";
 
 export default function AddEvent() {
   const [NameEvent, setNameEvent] = useState("");
@@ -26,6 +30,23 @@ export default function AddEvent() {
   const [Description, setDescription] = useState("");
   const [Telephone, setTelephone] = useState("");
   const [email, setEmail] = useState("");
+
+  const [filters, setfilters] = useState(new Array(categories.length).fill(""));
+
+  const handleChange = (position) => {
+    const newFilters = filters.map((element, i) => {
+      if (i === position) {
+        if (element === "") {
+          return categories[i];
+        }
+        return "";
+      }
+      return element;
+    });
+    setfilters(newFilters);
+  };
+
+  const firebase = FIREBASE_FIRESTORE;
 
   return (
     <View
@@ -75,10 +96,20 @@ export default function AddEvent() {
         <View style={styles.categoryContainer}>
           <TextRoboto text={"Categoria"} color={colors.White} size={16} />
           <ScrollView horizontal={true}>
-            {categories.map((element) => (
-              <View style={styles.category}>
-                <TextRoboto text={element} color={colors.Black} />
-              </View>
+            {categories.map((element, i) => (
+              <Pressable onPress={() => handleChange(i)}>
+                <View
+                  style={
+                    filters[i] === "" ? styles.category : styles.categoryChecked
+                  }
+                >
+                  <TextRoboto
+                    text={element}
+                    color={filters[i] === "" ? colors.Black : colors.White}
+                    key={i}
+                  />
+                </View>
+              </Pressable>
             ))}
           </ScrollView>
         </View>
@@ -213,6 +244,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 16,
     marginHorizontal: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: colors.Grey,
+  },
+  categoryChecked: {
+    backgroundColor: colors.LightGrey,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    marginHorizontal: 4,
+    borderWidth: 2,
+    backgroundColor: colors.Amaranth,
+    borderColor: colors.LightGrey,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   inputBox: {
     width: "100%",
