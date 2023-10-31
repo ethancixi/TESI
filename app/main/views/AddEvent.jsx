@@ -31,7 +31,7 @@ export default function AddEvent() {
   const [Description, setDescription] = useState("");
   const [Telephone, setTelephone] = useState("");
   const [email, setEmail] = useState("");
-  const [LatLong, setLatLong] = useState(["", ""]);
+  const [LatLong, setLatLong] = useState({ latitude: "", longitude: "" });
 
   const [filters, setfilters] = useState(new Array(categories.length).fill(""));
 
@@ -110,14 +110,14 @@ export default function AddEvent() {
         <TextInput
           placeholder="Nome dell'evento"
           placeholderTextColor={colors.LightGrey}
-          onChangeText={(newNameEvent) => setNameEvent(NameEvent)}
+          onChangeText={(newNameEvent) => setNameEvent(newNameEvent)}
           defaultValue={NameEvent}
           style={styles.inputBox}
         />
         <TextInput
           placeholder="Ente Organizzatore"
           placeholderTextColor={colors.LightGrey}
-          onChangeText={(newOrganizer) => setOrganizer(Organizer)}
+          onChangeText={(newOrganizer) => setOrganizer(newOrganizer)}
           defaultValue={Organizer}
           style={styles.inputBox}
         />
@@ -198,7 +198,7 @@ export default function AddEvent() {
           <TextInput
             multiline={true}
             numberOfLines={4}
-            onChangeText={(newDescription) => setDescription(Description)}
+            onChangeText={(newDescription) => setDescription(newDescription)}
             placeholder="Descrizione dell'evento"
             placeholderTextColor={colors.LightGrey}
             defaultValue={Description}
@@ -234,7 +234,7 @@ export default function AddEvent() {
           <TextInput
             placeholder="Inserisci un numero di telefono"
             placeholderTextColor={colors.LightGrey}
-            onChangeText={(newTelephone) => setTelephone(Telephone)}
+            onChangeText={(newTelephone) => setTelephone(newTelephone)}
             defaultValue={Telephone}
             style={styles.inputBox}
             inputMode="numeric"
@@ -242,7 +242,7 @@ export default function AddEvent() {
           <TextInput
             placeholder="inserisci una email di contatto"
             placeholderTextColor={colors.LightGrey}
-            onChangeText={(newEmail) => setEmail(email)}
+            onChangeText={(newEmail) => setEmail(newEmail)}
             defaultValue={NameEvent}
             style={styles.inputBox}
             inputMode="email"

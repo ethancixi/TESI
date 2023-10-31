@@ -22,7 +22,6 @@ import container from "../../../styles/container";
 import verticalContainer from "../../../styles/verticalContainer";
 import horizontalContainer from "../../../styles/horizontalContainer";
 import colors from "../../../constants/colors";
-import { collection, getDocs } from "firebase/firestore";
 import { FIREBASE_FIRESTORE } from "../../../firebaseConfig";
 
 import { categories } from "../../../constants/categories";
@@ -65,7 +64,6 @@ export default function Map() {
   const [isChecked3Days, setChecked3Days] = useState(false);
   const [isChecked7Days, setChecked7Days] = useState(false);
   const [isChecked30Days, setChecked30Days] = useState(false);
-  const [check, setCheck] = useState(false);
   const [region, setRegion] = useState({});
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -100,6 +98,20 @@ export default function Map() {
     setfilters(newFilters);
   };
 
+  const showEvents = () => {
+    return events.map((event, i) => {
+      return (
+        <Marker
+          coordinate={event.LatLong}
+          title={event.NameEvent}
+          description={event.Description}
+          key={i}
+          image={require("../../../assets/MapPin64.png")}
+        />
+      );
+    });
+  };
+
   return (
     <View style={container.container}>
       <Tabs.Screen
@@ -117,7 +129,9 @@ export default function Map() {
         style={styles.map}
         region={region}
         onRegionChange={() => setRegion(region)}
-      ></MapView>
+      >
+        {showEvents()}
+      </MapView>
 
       <View
         style={
