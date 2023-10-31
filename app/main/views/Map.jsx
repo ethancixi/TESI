@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Tabs, router } from "expo-router";
 import {
   Image,
@@ -9,9 +9,9 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  Modal,
+  ActivityIndicator,
 } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { StatusBar } from "expo-status-bar";
 import Checkbox from "expo-checkbox";
 import "react-native-gesture-handler";
@@ -22,8 +22,11 @@ import container from "../../../styles/container";
 import verticalContainer from "../../../styles/verticalContainer";
 import horizontalContainer from "../../../styles/horizontalContainer";
 import colors from "../../../constants/colors";
+import { collection, getDocs } from "firebase/firestore";
+import { FIREBASE_FIRESTORE } from "../../../firebaseConfig";
 
 import { categories } from "../../../constants/categories";
+import { findEvents } from "../../../hooks/getEvents";
 
 function CentralTabBarButton({ onPress }) {
   const distance = Platform.OS === "ios" ? -16 : -32;
@@ -63,6 +66,39 @@ export default function Map() {
   const [isChecked7Days, setChecked7Days] = useState(false);
   const [isChecked30Days, setChecked30Days] = useState(false);
   const [check, setCheck] = useState(false);
+  const [region, setRegion] = useState({});
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filters, setfilters] = useState(new Array(categories.length).fill(""));
+
+  const firestore = FIREBASE_FIRESTORE;
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    const res = await findEvents();
+
+    setEvents([...res]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [search]);
+
+  const handleChange = (position) => {
+    const newFilters = filters.map((element, i) => {
+      if (i === position) {
+        if (element === "") {
+          return categories[i];
+        }
+        return "";
+      }
+      return element;
+    });
+    setfilters(newFilters);
+  };
 
   return (
     <View style={container.container}>
@@ -77,7 +113,11 @@ export default function Map() {
           ),
         }}
       />
-      <MapView style={styles.map} />
+      <MapView
+        style={styles.map}
+        region={region}
+        onRegionChange={() => setRegion(region)}
+      ></MapView>
 
       <View
         style={
@@ -93,127 +133,145 @@ export default function Map() {
           style={styles.textShadowTitle}
         />
       </View>
-      <View
-        style={{
-          ...container.container,
-          ...styles.searchAndFiltersBox,
-        }}
-      >
-        <View style={styles.searchAndFilters}>
-          <View
-            style={{
-              ...horizontalContainer.horizontalContainer,
-              ...styles.searchBarBox,
-            }}
-          >
-            <Image
-              source={require("../../../assets/MapPin.png")}
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color={colors.Amaranth}
+          style={{ margin: 64 }}
+        />
+      ) : (
+        <View
+          style={{
+            ...container.container,
+            ...styles.searchAndFiltersBox,
+          }}
+        >
+          <View style={styles.searchAndFilters}>
+            <View
               style={{
-                objectFit: "contain",
-                height: 24,
-                width: 24,
-              }}
-            />
-            <TextInput
-              placeholder="Cerca qui!"
-              style={styles.searchBar}
-              placeholderTextColor={colors.LightGrey}
-            />
-            <Image
-              source={require("../../../assets/icons/magnifying-glass.png")}
-              style={{
-                objectFit: "contain",
-                height: 24,
-                width: 24,
-              }}
-            />
-          </View>
-
-          <ScrollView horizontal={true}>
-            {categories.map((element) => (
-              <View style={styles.category}>
-                <TextRoboto text={element} color={colors.White} />
-              </View>
-            ))}
-          </ScrollView>
-
-          <View style={{ alignItems: "flex-end" }}>
-            <Pressable
-              style={{
-                ...styles.datepicker,
                 ...horizontalContainer.horizontalContainer,
+                ...styles.searchBarBox,
               }}
-              onPress={() => setShowDateModal(!showDateModal)}
             >
-              <TextRoboto text={"Data"} color={colors.White} />
               <Image
-                source={
-                  !showDateModal
-                    ? require("../../../assets/icons/chevron-right.png")
-                    : require("../../../assets/icons/chevron-down.png")
-                }
+                source={require("../../../assets/MapPin.png")}
                 style={{
                   objectFit: "contain",
                   height: 24,
                   width: 24,
                 }}
               />
-            </Pressable>
-            {showDateModal ? (
-              <View style={styles.dateModal}>
-                <View style={styles.checkbox}>
-                  <Checkbox
-                    value={isChecked1Day}
-                    onValueChange={setChecked1Day}
-                    color={isChecked1Day ? colors.Amaranth : undefined}
-                  />
-                  <TextRoboto text={"1 giorno"} color={colors.White} />
-                </View>
-                <View style={styles.checkbox}>
-                  <Checkbox
-                    value={isChecked3Days}
-                    onValueChange={setChecked3Days}
-                    color={isChecked3Days ? colors.Amaranth : undefined}
-                  />
-                  <TextRoboto text={"3 giorni"} color={colors.White} />
-                </View>
-                <View style={styles.checkbox}>
-                  <Checkbox
-                    value={isChecked7Days}
-                    onValueChange={setChecked7Days}
-                    color={isChecked7Days ? colors.Amaranth : undefined}
-                  />
-                  <TextRoboto text={"7 giorni"} color={colors.White} />
-                </View>
-                <View style={styles.checkbox}>
-                  <Checkbox
-                    value={isChecked30Days}
-                    onValueChange={setChecked30Days}
-                    color={isChecked30Days ? colors.Amaranth : undefined}
-                  />
-                  <TextRoboto text={"30 giorni"} color={colors.White} />
-                </View>
-              </View>
-            ) : null}
-          </View>
+              <TextInput
+                placeholder="Cerca qui!"
+                style={styles.searchBar}
+                placeholderTextColor={colors.LightGrey}
+                defaultValue={search}
+                onChangeText={(newSearch) => setSearch(newSearch)}
+              />
+              <Image
+                source={require("../../../assets/icons/magnifying-glass.png")}
+                style={{
+                  objectFit: "contain",
+                  height: 24,
+                  width: 24,
+                }}
+              />
+            </View>
 
-          <View style={{ alignItems: "flex-end" }}>
-            <Pressable
-              style={styles.plus}
-              onPress={() => router.push("/main/views/AddEvent")}
-            >
-              <Image
-                source={require("../../../assets/icons/plus.png")}
+            <ScrollView horizontal={true}>
+              {categories.map((element, i) => (
+                <Pressable onPress={() => handleChange(i)}>
+                  <View
+                    style={
+                      filters[i] === ""
+                        ? styles.category
+                        : styles.categoryChecked
+                    }
+                  >
+                    <TextRoboto text={element} color={colors.White} key={i} />
+                  </View>
+                </Pressable>
+              ))}
+            </ScrollView>
+
+            <View style={{ alignItems: "flex-end" }}>
+              <Pressable
                 style={{
-                  objectFit: "contain",
-                  height: 24,
-                  width: 24,
+                  ...styles.datepicker,
+                  ...horizontalContainer.horizontalContainer,
                 }}
-              />
-            </Pressable>
+                onPress={() => setShowDateModal(!showDateModal)}
+              >
+                <TextRoboto text={"Data"} color={colors.White} />
+                <Image
+                  source={
+                    !showDateModal
+                      ? require("../../../assets/icons/chevron-right.png")
+                      : require("../../../assets/icons/chevron-down.png")
+                  }
+                  style={{
+                    objectFit: "contain",
+                    height: 24,
+                    width: 24,
+                  }}
+                />
+              </Pressable>
+              {showDateModal ? (
+                <View style={styles.dateModal}>
+                  <View style={styles.checkbox}>
+                    <Checkbox
+                      value={isChecked1Day}
+                      onValueChange={setChecked1Day}
+                      color={isChecked1Day ? colors.Amaranth : undefined}
+                    />
+                    <TextRoboto text={"1 giorno"} color={colors.White} />
+                  </View>
+                  <View style={styles.checkbox}>
+                    <Checkbox
+                      value={isChecked3Days}
+                      onValueChange={setChecked3Days}
+                      color={isChecked3Days ? colors.Amaranth : undefined}
+                    />
+                    <TextRoboto text={"3 giorni"} color={colors.White} />
+                  </View>
+                  <View style={styles.checkbox}>
+                    <Checkbox
+                      value={isChecked7Days}
+                      onValueChange={setChecked7Days}
+                      color={isChecked7Days ? colors.Amaranth : undefined}
+                    />
+                    <TextRoboto text={"7 giorni"} color={colors.White} />
+                  </View>
+                  <View style={styles.checkbox}>
+                    <Checkbox
+                      value={isChecked30Days}
+                      onValueChange={setChecked30Days}
+                      color={isChecked30Days ? colors.Amaranth : undefined}
+                    />
+                    <TextRoboto text={"30 giorni"} color={colors.White} />
+                  </View>
+                </View>
+              ) : null}
+            </View>
+
+            <View style={{ alignItems: "flex-end" }}>
+              <Pressable
+                style={styles.plus}
+                onPress={() => router.push("/main/views/AddEvent")}
+              >
+                <Image
+                  source={require("../../../assets/icons/plus.png")}
+                  style={{
+                    objectFit: "contain",
+                    height: 24,
+                    width: 24,
+                  }}
+                />
+              </Pressable>
+            </View>
           </View>
         </View>
-      </View>
+      )}
       <StatusBar style={styles.statusBar} />
     </View>
   );
@@ -294,6 +352,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 16,
     marginHorizontal: 4,
+    borderWidth: 2,
+    borderColor: colors.Grey,
+  },
+  categoryChecked: {
+    backgroundColor: colors.LightGrey,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    marginHorizontal: 4,
+    borderWidth: 2,
+    backgroundColor: colors.Grey,
+    borderColor: colors.Amaranth,
   },
   datepicker: {
     maxWidth: "30%",

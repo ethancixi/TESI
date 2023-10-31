@@ -29,7 +29,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const isLoggedIn = useLogin((state) => state.isLoggedIn);
-  const changeLoggedIn = useLogin((state) => state).changeIsLoggedIn;
+  const changeLoggedIn = useLogin((state) => state.changeIsLoggedIn);
 
   const auth = FIREBASE_AUTH;
 

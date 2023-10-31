@@ -69,6 +69,12 @@ export default function Layout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="Details"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

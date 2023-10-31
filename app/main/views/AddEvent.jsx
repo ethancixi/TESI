@@ -21,8 +21,9 @@ import ButtonRed from "../../../components/buttons/ButtonRed";
 import colors from "../../../constants/colors";
 import { categories } from "../../../constants/categories";
 import { collection, addDoc } from "firebase/firestore";
-import FIREBASE_FIRESTORE from "../../../firebaseConfig";
-import Checkbox from "expo-checkbox";
+import { FIREBASE_FIRESTORE } from "../../../firebaseConfig";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { router } from "expo-router";
 
 export default function AddEvent() {
   const [NameEvent, setNameEvent] = useState("");
@@ -30,8 +31,16 @@ export default function AddEvent() {
   const [Description, setDescription] = useState("");
   const [Telephone, setTelephone] = useState("");
   const [email, setEmail] = useState("");
+  const [LatLong, setLatLong] = useState(["", ""]);
 
   const [filters, setfilters] = useState(new Array(categories.length).fill(""));
+
+  const [date, setDate] = useState(new Date(1598051730000));
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+  };
 
   const handleChange = (position) => {
     const newFilters = filters.map((element, i) => {
@@ -46,7 +55,26 @@ export default function AddEvent() {
     setfilters(newFilters);
   };
 
-  const firebase = FIREBASE_FIRESTORE;
+  const firestore = FIREBASE_FIRESTORE;
+
+  const formSubmit = async () => {
+    try {
+      const docRef = await addDoc(collection(firestore, "events"), {
+        NameEvent: NameEvent,
+        Organizer: Organizer,
+        Description: Description,
+        Telephone: Telephone,
+        email: email,
+        filters: filters,
+        date: date,
+        LatLong: LatLong,
+      });
+      console.log("Document written with ID: ", docRef.id);
+      router.push("/main/views/Map");
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
 
   return (
     <View
@@ -120,6 +148,13 @@ export default function AddEvent() {
           }}
         >
           <TextRoboto text={"Data"} color={colors.White} size={16} />
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode={"date"}
+            is24Hour={true}
+            onChange={onChange}
+          />
           <Image
             source={require("../../../assets/icons/calendar-days.png")}
             style={{
@@ -136,6 +171,13 @@ export default function AddEvent() {
           }}
         >
           <TextRoboto text={"Ora"} color={colors.White} size={16} />
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode={"time"}
+            is24Hour={true}
+            onChange={onChange}
+          />
           <Image
             source={require("../../../assets/icons/clock.png")}
             style={{
@@ -143,6 +185,13 @@ export default function AddEvent() {
               height: 24,
               width: 24,
             }}
+          />
+        </View>
+        <View style={{ ...container.container, ...{ marginVertical: 8 } }}>
+          <TextRoboto
+            text={date.toLocaleString()}
+            color={colors.White}
+            size={16}
           />
         </View>
         <View>
@@ -188,6 +237,7 @@ export default function AddEvent() {
             onChangeText={(newTelephone) => setTelephone(Telephone)}
             defaultValue={Telephone}
             style={styles.inputBox}
+            inputMode="numeric"
           />
           <TextInput
             placeholder="inserisci una email di contatto"
@@ -195,10 +245,11 @@ export default function AddEvent() {
             onChangeText={(newEmail) => setEmail(email)}
             defaultValue={NameEvent}
             style={styles.inputBox}
+            inputMode="email"
           />
         </View>
         <View style={{ alignItems: "flex-end", marginVertical: 16 }}>
-          <ButtonRed text={"Aggiungi Evento"} func={() => null} />
+          <ButtonRed text={"Aggiungi Evento"} func={formSubmit} />
         </View>
       </ScrollView>
 
@@ -244,9 +295,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 16,
     marginHorizontal: 4,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
     borderWidth: 2,
     borderColor: colors.Grey,
   },
@@ -259,9 +307,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     backgroundColor: colors.Amaranth,
     borderColor: colors.LightGrey,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
   },
   inputBox: {
     width: "100%",
